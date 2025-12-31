@@ -1,330 +1,609 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Job Application Generator</title>
-    <link rel="stylesheet" href="css/variables.css">
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/buttons.css">
-    <link rel="stylesheet" href="css/forms.css">
-    <link rel="stylesheet" href="css/cards.css">
-    <link rel="stylesheet" href="css/modals.css">
-    <link rel="stylesheet" href="css/utilities.css">
-    <link rel="stylesheet" href="css/options.css">
-</head>
-<body>
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/buttons.css" />
+    <link rel="stylesheet" href="css/forms.css" />
+    <link rel="stylesheet" href="css/cards.css" />
+    <link rel="stylesheet" href="css/modals.css" />
+    <link rel="stylesheet" href="css/utilities.css" />
+    <link rel="stylesheet" href="css/options.css" />
+    <link rel="icon" href="/favicon.ico" />
+  </head>
+  <body>
     <div class="container">
-        <header class="header">
-            <h1>📄 Job Application Generator</h1>
-            <div class="header-actions">
-                <button class="btn-icon" id="themeToggle" title="Toggle Dark Mode">🌙</button>
-                <button class="btn-icon" id="settingsBtn" title="Settings">⚙️</button>
-            </div>
-        </header>
+      <header class="header">
+        <h1>📄 Job Application Generator</h1>
+        <div class="header-actions">
+          <button class="btn-icon" id="themeToggle" title="Toggle Dark Mode">
+            🌙
+          </button>
+          <button class="btn-icon" id="settingsBtn" title="Settings">⚙️</button>
+        </div>
+      </header>
 
-        <div class="warning" id="apiKeyWarning" style="display: none;">
-            ⚠️ No API key set. <button class="btn-link" id="addApiKeyBtn">Add your Claude API key</button>
+      <div class="warning" id="apiKeyWarning" style="display: none">
+        ⚠️ No API key set.
+        <button class="btn-link" id="addApiKeyBtn">
+          Add your Claude API key
+        </button>
+      </div>
+
+      <div class="card profile-summary">
+        <div class="card-header">
+          <h2>My Profile</h2>
+          <div class="card-actions">
+            <button class="btn-secondary" id="importResumeBtn">
+              📥 Import Resume
+            </button>
+            <button class="btn-secondary" id="editProfileBtn">
+              Edit Profile
+            </button>
+          </div>
+        </div>
+        <div class="profile-info">
+          <p class="name" id="summaryName">No name set</p>
+          <p class="contact" id="summaryContact">Add contact info</p>
+          <div class="counts" id="summaryCounts"></div>
+        </div>
+      </div>
+
+      <div class="profile-sections" id="profileSections" style="display: none">
+        <div class="card accordion">
+          <div class="accordion-header">
+            <h3>Personal Information</h3>
+            <span class="accordion-icon">▼</span>
+          </div>
+          <div class="accordion-content">
+            <form id="personalForm">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="fullName">Full Name *</label
+                  ><input type="text" id="fullName" required />
+                </div>
+                <div class="form-group">
+                  <label for="email">Email *</label
+                  ><input type="email" id="email" required />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="phone">Phone</label
+                  ><input type="tel" id="phone" />
+                </div>
+                <div class="form-group">
+                  <label for="location">Location</label
+                  ><input
+                    type="text"
+                    id="location"
+                    placeholder="City, Country"
+                  />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="linkedIn">LinkedIn</label
+                  ><input type="url" id="linkedIn" />
+                </div>
+                <div class="form-group">
+                  <label for="github">GitHub</label
+                  ><input type="url" id="github" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="portfolio">Portfolio</label
+                ><input type="url" id="portfolio" />
+              </div>
+            </form>
+          </div>
         </div>
 
-        <div class="card profile-summary">
-            <div class="card-header">
-                <h2>My Profile</h2>
-                <div class="card-actions">
-                    <button class="btn-secondary" id="importResumeBtn">📥 Import Resume</button>
-                    <button class="btn-secondary" id="editProfileBtn">Edit Profile</button>
-                </div>
-            </div>
-            <div class="profile-info">
-                <p class="name" id="summaryName">No name set</p>
-                <p class="contact" id="summaryContact">Add contact info</p>
-                <div class="counts" id="summaryCounts"></div>
-            </div>
+        <div class="card accordion">
+          <div class="accordion-header">
+            <h3>Education</h3>
+            <span class="accordion-icon">▼</span>
+          </div>
+          <div class="accordion-content">
+            <div id="educationList"></div>
+            <button class="btn-secondary" id="addEducationBtn">
+              + Add Education
+            </button>
+          </div>
         </div>
 
-        <div class="profile-sections" id="profileSections" style="display: none;">
-            <div class="card accordion">
-                <div class="accordion-header"><h3>Personal Information</h3><span class="accordion-icon">▼</span></div>
-                <div class="accordion-content">
-                    <form id="personalForm">
-                        <div class="form-row">
-                            <div class="form-group"><label for="fullName">Full Name *</label><input type="text" id="fullName" required></div>
-                            <div class="form-group"><label for="email">Email *</label><input type="email" id="email" required></div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group"><label for="phone">Phone</label><input type="tel" id="phone"></div>
-                            <div class="form-group"><label for="location">Location</label><input type="text" id="location" placeholder="City, Country"></div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group"><label for="linkedIn">LinkedIn</label><input type="url" id="linkedIn"></div>
-                            <div class="form-group"><label for="github">GitHub</label><input type="url" id="github"></div>
-                        </div>
-                        <div class="form-group"><label for="portfolio">Portfolio</label><input type="url" id="portfolio"></div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="card accordion">
-                <div class="accordion-header"><h3>Education</h3><span class="accordion-icon">▼</span></div>
-                <div class="accordion-content">
-                    <div id="educationList"></div>
-                    <button class="btn-secondary" id="addEducationBtn">+ Add Education</button>
-                </div>
-            </div>
-
-            <div class="card accordion">
-                <div class="accordion-header"><h3>Experience</h3><span class="accordion-icon">▼</span></div>
-                <div class="accordion-content">
-                    <div id="experienceList"></div>
-                    <button class="btn-secondary" id="addExperienceBtn">+ Add Experience</button>
-                </div>
-            </div>
-
-            <div class="card accordion">
-                <div class="accordion-header"><h3>Projects</h3><span class="accordion-icon">▼</span></div>
-                <div class="accordion-content">
-                    <div id="projectsList"></div>
-                    <button class="btn-secondary" id="addProjectBtn">+ Add Project</button>
-                </div>
-            </div>
-
-            <div class="card accordion">
-                <div class="accordion-header"><h3>Skills</h3><span class="accordion-icon">▼</span></div>
-                <div class="accordion-content">
-                    <form id="skillsForm">
-                        <div class="form-group"><label for="technicalSkills">Technical Skills</label><textarea id="technicalSkills" rows="2"></textarea><small>Comma-separated</small></div>
-                        <div class="form-group"><label for="tools">Tools</label><textarea id="tools" rows="2"></textarea></div>
-                        <div class="form-group"><label for="softSkills">Soft Skills</label><textarea id="softSkills" rows="2"></textarea></div>
-                        <div class="form-group"><label for="certifications">Certifications</label><textarea id="certifications" rows="2"></textarea></div>
-                        <div class="form-group"><label for="spokenLanguages">Languages</label><textarea id="spokenLanguages" rows="2"></textarea></div>
-                    </form>
-                </div>
-            </div>
-            <button class="btn-secondary" id="closeProfileBtn">Close Profile</button>
+        <div class="card accordion">
+          <div class="accordion-header">
+            <h3>Experience</h3>
+            <span class="accordion-icon">▼</span>
+          </div>
+          <div class="accordion-content">
+            <div id="experienceList"></div>
+            <button class="btn-secondary" id="addExperienceBtn">
+              + Add Experience
+            </button>
+          </div>
         </div>
 
-        <div class="card job-section">
-            <h2>Generate for New Job</h2>
-            <div class="form-row">
-                <div class="form-group"><label for="jobTitle">Job Title *</label><input type="text" id="jobTitle" required></div>
-                <div class="form-group"><label for="companyName">Company *</label><input type="text" id="companyName" required></div>
-            </div>
-            <div class="form-group"><label for="jobDescription">Job Description *</label><textarea id="jobDescription" rows="8" required></textarea></div>
-            
-            <!-- Generation Options -->
-            <div class="options-section">
-                <div class="options-title">⚙️ Generation Options</div>
-                <div class="options-row">
-                    <div class="options-col">
-                        <h4>Content Options</h4>
-                        <div class="options-grid">
-                            <div class="option-item">
-                                <input type="checkbox" id="optMetrics">
-                                <label for="optMetrics">Add metrics (%, numbers)</label>
-                            </div>
-                            <div class="option-item">
-                                <input type="checkbox" id="optSummary">
-                                <label for="optSummary">Include summary statement</label>
-                            </div>
-                            <div class="option-item">
-                                <input type="checkbox" id="optBoldKeywords" checked>
-                                <label for="optBoldKeywords">Bold key terms</label>
-                            </div>
-                            <div class="option-item">
-                                <input type="checkbox" id="optLinks" checked>
-                                <label for="optLinks">Include project links</label>
-                            </div>
-                            <div class="option-item">
-                                <input type="checkbox" id="optCoursework">
-                                <label for="optCoursework">Show coursework</label>
-                            </div>
-                            <div class="option-item">
-                                <input type="checkbox" id="optKeywords" checked>
-                                <label for="optKeywords">Match job keywords</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="options-col">
-                        <h4>Sections (drag to reorder)</h4>
-                        <div class="section-order" id="sectionOrder">
-                            <div class="section-order-item" data-section="skills">
-                                <input type="checkbox" id="secSkills" checked>
-                                <span class="drag-handle">☰</span>
-                                <span class="section-name">Skills</span>
-                                <div class="move-btns">
-                                    <button class="move-btn" data-dir="up">▲</button>
-                                    <button class="move-btn" data-dir="down">▼</button>
-                                </div>
-                            </div>
-                            <div class="section-order-item" data-section="experience">
-                                <input type="checkbox" id="secExperience" checked>
-                                <span class="drag-handle">☰</span>
-                                <span class="section-name">Experience</span>
-                                <div class="move-btns">
-                                    <button class="move-btn" data-dir="up">▲</button>
-                                    <button class="move-btn" data-dir="down">▼</button>
-                                </div>
-                            </div>
-                            <div class="section-order-item" data-section="projects">
-                                <input type="checkbox" id="secProjects" checked>
-                                <span class="drag-handle">☰</span>
-                                <span class="section-name">Projects</span>
-                                <div class="move-btns">
-                                    <button class="move-btn" data-dir="up">▲</button>
-                                    <button class="move-btn" data-dir="down">▼</button>
-                                </div>
-                            </div>
-                            <div class="section-order-item" data-section="education">
-                                <input type="checkbox" id="secEducation" checked>
-                                <span class="drag-handle">☰</span>
-                                <span class="section-name">Education</span>
-                                <div class="move-btns">
-                                    <button class="move-btn" data-dir="up">▲</button>
-                                    <button class="move-btn" data-dir="down">▼</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="generate-buttons">
-                <button class="btn-primary btn-generate" id="generateResumeBtn">📄 Generate Resume</button>
-                <button class="btn-primary btn-generate" id="generateCoverLetterBtn">✉️ Generate Cover Letter</button>
-                <button class="btn-primary btn-generate btn-both" id="generateBothBtn">🚀 Generate Both</button>
-            </div>
+        <div class="card accordion">
+          <div class="accordion-header">
+            <h3>Projects</h3>
+            <span class="accordion-icon">▼</span>
+          </div>
+          <div class="accordion-content">
+            <div id="projectsList"></div>
+            <button class="btn-secondary" id="addProjectBtn">
+              + Add Project
+            </button>
+          </div>
         </div>
 
-        <div class="card output-section" id="outputSection" style="display: none;">
-            <h2>Generated Documents</h2>
-            <div class="loading" id="loadingSpinner" style="display: none;"><div class="spinner"></div><p id="loadingText">Generating...</p></div>
-            <div class="download-buttons" id="downloadButtons" style="display: none;">
-                <button class="btn-download" id="downloadResume" style="display: none;">📄 Download Resume (PDF)</button>
-                <button class="btn-download" id="downloadCover" style="display: none;">📄 Download Cover Letter (PDF)</button>
-            </div>
-            <div class="error-message" id="errorMessage" style="display: none;"></div>
+        <div class="card accordion">
+          <div class="accordion-header">
+            <h3>Skills</h3>
+            <span class="accordion-icon">▼</span>
+          </div>
+          <div class="accordion-content">
+            <form id="skillsForm">
+              <div class="form-group">
+                <label for="technicalSkills">Technical Skills</label
+                ><textarea id="technicalSkills" rows="2"></textarea
+                ><small>Comma-separated</small>
+              </div>
+              <div class="form-group">
+                <label for="tools">Tools</label
+                ><textarea id="tools" rows="2"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="softSkills">Soft Skills</label
+                ><textarea id="softSkills" rows="2"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="certifications">Certifications</label
+                ><textarea id="certifications" rows="2"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="spokenLanguages">Languages</label
+                ><textarea id="spokenLanguages" rows="2"></textarea>
+              </div>
+            </form>
+          </div>
         </div>
+        <button class="btn-secondary" id="closeProfileBtn">
+          Close Profile
+        </button>
+      </div>
+
+      <div class="card job-section">
+        <h2>Generate for New Job</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="jobTitle">Job Title *</label
+            ><input type="text" id="jobTitle" required />
+          </div>
+          <div class="form-group">
+            <label for="companyName">Company *</label
+            ><input type="text" id="companyName" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="jobDescription">Job Description *</label
+          ><textarea id="jobDescription" rows="8" required></textarea>
+        </div>
+
+        <!-- Generation Options -->
+        <div class="options-section">
+          <div class="options-title">⚙️ Generation Options</div>
+          <div class="options-row">
+            <div class="options-col">
+              <h4>Content Options</h4>
+              <div class="options-grid">
+                <div class="option-item">
+                  <input type="checkbox" id="optMetrics" />
+                  <label for="optMetrics">Add metrics (%, numbers)</label>
+                </div>
+                <div class="option-item">
+                  <input type="checkbox" id="optSummary" />
+                  <label for="optSummary">Include summary statement</label>
+                </div>
+                <div class="option-item">
+                  <input type="checkbox" id="optBoldKeywords" checked />
+                  <label for="optBoldKeywords">Bold key terms</label>
+                </div>
+                <div class="option-item">
+                  <input type="checkbox" id="optLinks" checked />
+                  <label for="optLinks">Include project links</label>
+                </div>
+                <div class="option-item">
+                  <input type="checkbox" id="optCoursework" />
+                  <label for="optCoursework">Show coursework</label>
+                </div>
+                <div class="option-item">
+                  <input type="checkbox" id="optKeywords" checked />
+                  <label for="optKeywords">Match job keywords</label>
+                </div>
+              </div>
+            </div>
+            <div class="options-col">
+              <h4>Sections (drag to reorder)</h4>
+              <div class="section-order" id="sectionOrder">
+                <div class="section-order-item" data-section="skills">
+                  <input type="checkbox" id="secSkills" checked />
+                  <span class="drag-handle">☰</span>
+                  <span class="section-name">Skills</span>
+                  <div class="move-btns">
+                    <button class="move-btn" data-dir="up">▲</button>
+                    <button class="move-btn" data-dir="down">▼</button>
+                  </div>
+                </div>
+                <div class="section-order-item" data-section="experience">
+                  <input type="checkbox" id="secExperience" checked />
+                  <span class="drag-handle">☰</span>
+                  <span class="section-name">Experience</span>
+                  <div class="move-btns">
+                    <button class="move-btn" data-dir="up">▲</button>
+                    <button class="move-btn" data-dir="down">▼</button>
+                  </div>
+                </div>
+                <div class="section-order-item" data-section="projects">
+                  <input type="checkbox" id="secProjects" checked />
+                  <span class="drag-handle">☰</span>
+                  <span class="section-name">Projects</span>
+                  <div class="move-btns">
+                    <button class="move-btn" data-dir="up">▲</button>
+                    <button class="move-btn" data-dir="down">▼</button>
+                  </div>
+                </div>
+                <div class="section-order-item" data-section="education">
+                  <input type="checkbox" id="secEducation" checked />
+                  <span class="drag-handle">☰</span>
+                  <span class="section-name">Education</span>
+                  <div class="move-btns">
+                    <button class="move-btn" data-dir="up">▲</button>
+                    <button class="move-btn" data-dir="down">▼</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="generate-buttons">
+          <button class="btn-primary btn-generate" id="generateResumeBtn">
+            📄 Generate Resume
+          </button>
+          <button class="btn-primary btn-generate" id="generateCoverLetterBtn">
+            ✉️ Generate Cover Letter
+          </button>
+          <button
+            class="btn-primary btn-generate btn-both"
+            id="generateBothBtn"
+          >
+            🚀 Generate Both
+          </button>
+        </div>
+      </div>
+
+      <div class="card output-section" id="outputSection" style="display: none">
+        <h2>Generated Documents</h2>
+        <div class="loading" id="loadingSpinner" style="display: none">
+          <div class="spinner"></div>
+          <p id="loadingText">Generating...</p>
+        </div>
+        <div
+          class="download-buttons"
+          id="downloadButtons"
+          style="display: none"
+        >
+          <button
+            class="btn-download"
+            id="downloadResume"
+            style="display: none"
+          >
+            📄 Download Resume (PDF)
+          </button>
+          <button class="btn-download" id="downloadCover" style="display: none">
+            📄 Download Cover Letter (PDF)
+          </button>
+        </div>
+        <div
+          class="error-message"
+          id="errorMessage"
+          style="display: none"
+        ></div>
+      </div>
     </div>
 
     <!-- Settings Modal with API Key Instructions -->
     <div class="modal" id="settingsModal">
-        <div class="modal-content modal-large">
-            <div class="modal-header"><h2>⚙️ Settings</h2><button class="btn-close" id="closeSettingsBtn">&times;</button></div>
-            <div class="modal-body">
-                <div class="api-instructions">
-                    <h3>🔑 Claude API Key</h3>
-                    <p>This app uses Claude AI to generate tailored resumes and cover letters. You'll need an API key from Anthropic.</p>
-                    
-                    <div class="instructions-steps">
-                        <h4>How to get your API key:</h4>
-                        <ol>
-                            <li>Go to <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a></li>
-                            <li>Sign up or log in to your account</li>
-                            <li>Navigate to <strong>API Keys</strong> in the sidebar</li>
-                            <li>Click <strong>Create Key</strong></li>
-                            <li>Copy the key (starts with <code>sk-ant-</code>)</li>
-                            <li>Paste it below</li>
-                        </ol>
-                    </div>
-                    
-                    <div class="instructions-note">
-                        <strong>💰 Cost:</strong> Each generation uses ~1,000-2,000 tokens (~$0.01-0.03). Anthropic offers free credits for new accounts.
-                    </div>
-                    
-                    <div class="instructions-note warning-note">
-                        <strong>🔒 Privacy:</strong> Your API key is stored only in your browser's local storage. It never leaves your device except to communicate directly with Anthropic's API.
-                    </div>
-                </div>
-                
-                <div class="form-group" style="margin-top: 20px;">
-                    <label for="apiKey">API Key</label>
-                    <div class="api-key-input">
-                        <input type="password" id="apiKey" placeholder="sk-ant-api03-...">
-                        <button type="button" class="btn-icon" id="toggleApiKey" title="Show/Hide">👁️</button>
-                    </div>
-                    <small>Your key is stored locally and never sent to any server except Anthropic</small>
-                </div>
-                
-                <div class="modal-actions">
-                    <button class="btn-primary" id="saveApiKeyBtn">💾 Save API Key</button>
-                </div>
-            </div>
+      <div class="modal-content modal-large">
+        <div class="modal-header">
+          <h2>⚙️ Settings</h2>
+          <button class="btn-close" id="closeSettingsBtn">&times;</button>
         </div>
+        <div class="modal-body">
+          <div class="api-instructions">
+            <h3>🔑 Claude API Key</h3>
+            <p>
+              This app uses Claude AI to generate tailored resumes and cover
+              letters. You'll need an API key from Anthropic.
+            </p>
+
+            <div class="instructions-steps">
+              <h4>How to get your API key:</h4>
+              <ol>
+                <li>
+                  Go to
+                  <a
+                    href="https://console.anthropic.com"
+                    target="_blank"
+                    rel="noopener"
+                    >console.anthropic.com</a
+                  >
+                </li>
+                <li>Sign up or log in to your account</li>
+                <li>Navigate to <strong>API Keys</strong> in the sidebar</li>
+                <li>Click <strong>Create Key</strong></li>
+                <li>Copy the key (starts with <code>sk-ant-</code>)</li>
+                <li>Paste it below</li>
+              </ol>
+            </div>
+
+            <div class="instructions-note">
+              <strong>💰 Cost:</strong> Each generation uses ~1,000-2,000 tokens
+              (~$0.01-0.03). Anthropic offers free credits for new accounts.
+            </div>
+
+            <div class="instructions-note warning-note">
+              <strong>🔒 Privacy:</strong> Your API key is stored only in your
+              browser's local storage. It never leaves your device except to
+              communicate directly with Anthropic's API.
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 20px">
+            <label for="apiKey">API Key</label>
+            <div class="api-key-input">
+              <input
+                type="password"
+                id="apiKey"
+                placeholder="sk-ant-api03-..."
+              />
+              <button
+                type="button"
+                class="btn-icon"
+                id="toggleApiKey"
+                title="Show/Hide"
+              >
+                👁️
+              </button>
+            </div>
+            <small
+              >Your key is stored locally and never sent to any server except
+              Anthropic</small
+            >
+          </div>
+
+          <div class="modal-actions">
+            <button class="btn-primary" id="saveApiKeyBtn">
+              💾 Save API Key
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Import Modal -->
     <div class="modal" id="importModal">
-        <div class="modal-content modal-large">
-            <div class="modal-header"><h2>📥 Import Resume</h2><button class="btn-close" id="closeImportBtn">&times;</button></div>
-            <div class="modal-body">
-                <p class="modal-description">Paste your existing resume text below. AI will extract your information and populate your profile.</p>
-                <div class="form-group"><label for="resumeText">Resume Text</label><textarea id="resumeText" rows="12" placeholder="Paste your resume content here..."></textarea></div>
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="cancelImportBtn">Cancel</button>
-                    <button class="btn-primary" id="parseResumeBtn">🔍 Parse Resume</button>
-                </div>
-                <div class="loading" id="importSpinner" style="display: none;"><div class="spinner"></div><p>Analyzing your resume...</p></div>
-            </div>
+      <div class="modal-content modal-large">
+        <div class="modal-header">
+          <h2>📥 Import Resume</h2>
+          <button class="btn-close" id="closeImportBtn">&times;</button>
         </div>
+        <div class="modal-body">
+          <p class="modal-description">
+            Paste your existing resume text below. AI will extract your
+            information and populate your profile.
+          </p>
+          <div class="form-group">
+            <label for="resumeText">Resume Text</label
+            ><textarea
+              id="resumeText"
+              rows="12"
+              placeholder="Paste your resume content here..."
+            ></textarea>
+          </div>
+          <div class="modal-actions">
+            <button class="btn-secondary" id="cancelImportBtn">Cancel</button>
+            <button class="btn-primary" id="parseResumeBtn">
+              🔍 Parse Resume
+            </button>
+          </div>
+          <div class="loading" id="importSpinner" style="display: none">
+            <div class="spinner"></div>
+            <p>Analyzing your resume...</p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Education Modal -->
     <div class="modal" id="educationModal">
-        <div class="modal-content modal-large">
-            <div class="modal-header"><h2 id="educationModalTitle">Add Education</h2><button class="btn-close" id="closeEducationBtn">&times;</button></div>
-            <div class="modal-body">
-                <form id="educationForm">
-                    <input type="hidden" id="educationId">
-                    <div class="form-row"><div class="form-group"><label>Institution *</label><input type="text" id="eduInstitution" required></div><div class="form-group"><label>Degree *</label><input type="text" id="eduDegree" required></div></div>
-                    <div class="form-row"><div class="form-group"><label>Field *</label><input type="text" id="eduField" required></div><div class="form-group"><label>GPA</label><input type="text" id="eduGpa"></div></div>
-                    <div class="form-row"><div class="form-group"><label>Start</label><input type="text" id="eduStartDate" placeholder="MM/YYYY"></div><div class="form-group"><label>End</label><input type="text" id="eduEndDate" placeholder="MM/YYYY"></div></div>
-                    <div class="form-group"><label>Coursework</label><textarea id="eduCoursework" rows="2"></textarea></div>
-                    <div class="form-group"><label>Honors</label><input type="text" id="eduHonors"></div>
-                    <div class="form-group"><label>Notes</label><textarea id="eduNotes" rows="2"></textarea></div>
-                    <div class="modal-actions"><button type="button" class="btn-secondary" id="cancelEducationBtn">Cancel</button><button type="submit" class="btn-primary">Save</button></div>
-                </form>
-            </div>
+      <div class="modal-content modal-large">
+        <div class="modal-header">
+          <h2 id="educationModalTitle">Add Education</h2>
+          <button class="btn-close" id="closeEducationBtn">&times;</button>
         </div>
+        <div class="modal-body">
+          <form id="educationForm">
+            <input type="hidden" id="educationId" />
+            <div class="form-row">
+              <div class="form-group">
+                <label>Institution *</label
+                ><input type="text" id="eduInstitution" required />
+              </div>
+              <div class="form-group">
+                <label>Degree *</label
+                ><input type="text" id="eduDegree" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Field *</label
+                ><input type="text" id="eduField" required />
+              </div>
+              <div class="form-group">
+                <label>GPA</label><input type="text" id="eduGpa" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Start</label
+                ><input type="text" id="eduStartDate" placeholder="MM/YYYY" />
+              </div>
+              <div class="form-group">
+                <label>End</label
+                ><input type="text" id="eduEndDate" placeholder="MM/YYYY" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Coursework</label
+              ><textarea id="eduCoursework" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Honors</label><input type="text" id="eduHonors" />
+            </div>
+            <div class="form-group">
+              <label>Notes</label><textarea id="eduNotes" rows="2"></textarea>
+            </div>
+            <div class="modal-actions">
+              <button
+                type="button"
+                class="btn-secondary"
+                id="cancelEducationBtn"
+              >
+                Cancel</button
+              ><button type="submit" class="btn-primary">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
 
     <!-- Experience Modal -->
     <div class="modal" id="experienceModal">
-        <div class="modal-content modal-large">
-            <div class="modal-header"><h2 id="experienceModalTitle">Add Experience</h2><button class="btn-close" id="closeExperienceBtn">&times;</button></div>
-            <div class="modal-body">
-                <form id="experienceForm">
-                    <input type="hidden" id="experienceId">
-                    <div class="form-row"><div class="form-group"><label>Title *</label><input type="text" id="expTitle" required></div><div class="form-group"><label>Company *</label><input type="text" id="expCompany" required></div></div>
-                    <div class="form-group"><label>Location</label><input type="text" id="expLocation"></div>
-                    <div class="form-row"><div class="form-group"><label>Start</label><input type="text" id="expStartDate"></div><div class="form-group"><label>End</label><input type="text" id="expEndDate"></div></div>
-                    <div class="form-group"><label>Description</label><textarea id="expDescription" rows="2"></textarea></div>
-                    <div class="form-group"><label>Achievements</label><textarea id="expAchievements" rows="4"></textarea><small>One per line</small></div>
-                    <div class="form-group"><label>Technologies</label><textarea id="expTechnologies" rows="2"></textarea></div>
-                    <div class="form-group"><label>Results</label><textarea id="expResults" rows="2"></textarea></div>
-                    <div class="modal-actions"><button type="button" class="btn-secondary" id="cancelExperienceBtn">Cancel</button><button type="submit" class="btn-primary">Save</button></div>
-                </form>
-            </div>
+      <div class="modal-content modal-large">
+        <div class="modal-header">
+          <h2 id="experienceModalTitle">Add Experience</h2>
+          <button class="btn-close" id="closeExperienceBtn">&times;</button>
         </div>
+        <div class="modal-body">
+          <form id="experienceForm">
+            <input type="hidden" id="experienceId" />
+            <div class="form-row">
+              <div class="form-group">
+                <label>Title *</label
+                ><input type="text" id="expTitle" required />
+              </div>
+              <div class="form-group">
+                <label>Company *</label
+                ><input type="text" id="expCompany" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Location</label><input type="text" id="expLocation" />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Start</label><input type="text" id="expStartDate" />
+              </div>
+              <div class="form-group">
+                <label>End</label><input type="text" id="expEndDate" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Description</label
+              ><textarea id="expDescription" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Achievements</label
+              ><textarea id="expAchievements" rows="4"></textarea
+              ><small>One per line</small>
+            </div>
+            <div class="form-group">
+              <label>Technologies</label
+              ><textarea id="expTechnologies" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Results</label
+              ><textarea id="expResults" rows="2"></textarea>
+            </div>
+            <div class="modal-actions">
+              <button
+                type="button"
+                class="btn-secondary"
+                id="cancelExperienceBtn"
+              >
+                Cancel</button
+              ><button type="submit" class="btn-primary">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
 
     <!-- Project Modal -->
     <div class="modal" id="projectModal">
-        <div class="modal-content modal-large">
-            <div class="modal-header"><h2 id="projectModalTitle">Add Project</h2><button class="btn-close" id="closeProjectBtn">&times;</button></div>
-            <div class="modal-body">
-                <form id="projectForm">
-                    <input type="hidden" id="projectId">
-                    <div class="form-row"><div class="form-group"><label>Name *</label><input type="text" id="projName" required></div><div class="form-group"><label>Date</label><input type="text" id="projDate"></div></div>
-                    <div class="form-group"><label>Short Description *</label><input type="text" id="projShortDesc" required></div>
-                    <div class="form-group"><label>Full Description</label><textarea id="projFullDesc" rows="2"></textarea></div>
-                    <div class="form-group"><label>Technologies *</label><textarea id="projTechnologies" rows="2" required></textarea></div>
-                    <div class="form-group"><label>Your Role</label><input type="text" id="projRole"></div>
-                    <div class="form-group"><label>Link</label><input type="url" id="projLink"></div>
-                    <div class="form-group"><label>Outcomes</label><textarea id="projOutcomes" rows="2"></textarea></div>
-                    <div class="modal-actions"><button type="button" class="btn-secondary" id="cancelProjectBtn">Cancel</button><button type="submit" class="btn-primary">Save</button></div>
-                </form>
-            </div>
+      <div class="modal-content modal-large">
+        <div class="modal-header">
+          <h2 id="projectModalTitle">Add Project</h2>
+          <button class="btn-close" id="closeProjectBtn">&times;</button>
         </div>
+        <div class="modal-body">
+          <form id="projectForm">
+            <input type="hidden" id="projectId" />
+            <div class="form-row">
+              <div class="form-group">
+                <label>Name *</label
+                ><input type="text" id="projName" required />
+              </div>
+              <div class="form-group">
+                <label>Date</label><input type="text" id="projDate" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Short Description *</label
+              ><input type="text" id="projShortDesc" required />
+            </div>
+            <div class="form-group">
+              <label>Full Description</label
+              ><textarea id="projFullDesc" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Technologies *</label
+              ><textarea id="projTechnologies" rows="2" required></textarea>
+            </div>
+            <div class="form-group">
+              <label>Your Role</label><input type="text" id="projRole" />
+            </div>
+            <div class="form-group">
+              <label>Link</label><input type="url" id="projLink" />
+            </div>
+            <div class="form-group">
+              <label>Outcomes</label
+              ><textarea id="projOutcomes" rows="2"></textarea>
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="btn-secondary" id="cancelProjectBtn">
+                Cancel</button
+              ><button type="submit" class="btn-primary">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -339,5 +618,5 @@
     <script src="js/ui/profile.js"></script>
     <script src="js/ui/generator.js"></script>
     <script src="js/app.js"></script>
-</body>
+  </body>
 </html>
